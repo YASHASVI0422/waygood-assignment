@@ -26,6 +26,12 @@ const register = asyncHandler(async (req, res) => {
     throw new HttpError(400, "fullName, email, and password are required.");
   }
 
+  // ✅ Email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    throw new HttpError(400, "Invalid email format.");
+  }
+
   if (password.length < 8) {
     throw new HttpError(400, "Password must be at least 8 characters.");
   }
@@ -44,7 +50,11 @@ const register = asyncHandler(async (req, res) => {
     preferredIntake: preferredIntake || null,
     maxBudgetUsd: maxBudgetUsd || null,
     englishTest: englishTest || { exam: "IELTS", score: 0 },
-    profileComplete: !!(targetCountries?.length && interestedFields?.length && maxBudgetUsd),
+    profileComplete: !!(
+      targetCountries?.length &&
+      interestedFields?.length &&
+      maxBudgetUsd
+    ),
   });
 
   const token = signToken(student._id);
@@ -69,6 +79,12 @@ const login = asyncHandler(async (req, res) => {
 
   if (!email || !password) {
     throw new HttpError(400, "email and password are required.");
+  }
+
+  // ✅ Email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    throw new HttpError(400, "Invalid email format.");
   }
 
   const student = await Student.findOne({ email: email.toLowerCase().trim() });
